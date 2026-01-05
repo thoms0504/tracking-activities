@@ -235,7 +235,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # File untuk menyimpan data
-DATA_FILE = "kegiatan_pns.json"
+DATA_FILE = "kegiatan_pns.csv"
 IMAGE_FOLDER = "bukti_kegiatan"
 
 if not os.path.exists(IMAGE_FOLDER):
@@ -243,13 +243,21 @@ if not os.path.exists(IMAGE_FOLDER):
 
 def load_data():
     if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, 'r') as f:
-            return json.load(f)
+        try:
+            df = pd.read_csv(DATA_FILE)
+            # Konversi DataFrame ke list of dictionaries
+            return df.to_dict('records')
+        except:
+            return []
     return []
 
 def save_data(data):
-    with open(DATA_FILE, 'w') as f:
-        json.dump(data, f, indent=2)
+    if not data:
+        # Buat CSV kosong dengan header
+        df = pd.DataFrame(columns=['id', 'tanggal', 'kegiatan', 'deskripsi', 'status', 'kategori', 'bukti'])
+    else:
+        df = pd.DataFrame(data)
+    df.to_csv(DATA_FILE, index=False, encoding='utf-8-sig')  # utf-8-sig agar bisa dibuka di Excel
 
 def save_image(image, activity_id):
     filename = f"{activity_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
