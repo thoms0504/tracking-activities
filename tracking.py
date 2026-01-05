@@ -590,7 +590,7 @@ elif st.session_state.current_page == 'Dashboard':
         if filtered_data:
             st.markdown(f"### 🔍 Ditemukan {len(filtered_data)} kegiatan")
             
-            for activity in sorted(filtered_data, key=lambda x: x['tanggal'], reverse=True):
+            for idx, activity in enumerate(sorted(filtered_data, key=lambda x: x['tanggal'], reverse=True)):
                 with st.expander(f"📅 {activity['tanggal']} • {activity['kegiatan']} • [{activity['kategori']}]"):
                     col1, col2 = st.columns([3, 1])
                     with col1:
@@ -599,14 +599,14 @@ elif st.session_state.current_page == 'Dashboard':
                         
                         col_a, col_b = st.columns(2)
                         with col_a:
-                            if st.button(f"✏️ Edit", key=f"edit_{activity['id']}"):
+                            if st.button(f"✏️ Edit", key=f"edit_{activity['id']}_{idx}"):
                                 st.session_state.edit_mode = True
                                 st.session_state.edit_id = activity['id']
                                 st.session_state.current_page = 'Tambah'
                                 st.rerun()
                         
                         with col_b:
-                            if st.button(f"🗑️ Hapus", key=f"delete_{activity['id']}"):
+                            if st.button(f"🗑️ Hapus", key=f"delete_{activity['id']}_{idx}"):
                                 if activity.get('bukti'):
                                     image_path = os.path.join(IMAGE_FOLDER, activity['bukti'])
                                     if os.path.exists(image_path):
